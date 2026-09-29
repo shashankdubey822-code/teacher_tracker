@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MRU Teacher Timetable & Availability Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- Top App Navigation Bar (Screen Only) -->
+  <header class="app-header no-print">
+    <div class="header-container">
+      <div class="brand-section">
+        <div class="logo-mark">MRU</div>
+        <div class="brand-text">
+          <h1>Faculty Timetable Tracker</h1>
+          <span class="sub-text">Manav Rachna University • EduPage Reverse Engineered</span>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <!-- Live Sync Status & Last Updated -->
+        <div class="sync-status-badge" id="syncStatusBadge" title="Last time schedule was fetched from EduPage">
+          <span class="live-dot"></span>
+          <span class="sync-label">EduPage Live:</span>
+          <span id="syncStatusText" class="sync-time">Checking...</span>
+        </div>
+
+        <!-- Manual Refresh Button with Loader -->
+        <button id="btnRefresh" class="btn-action btn-sync" onclick="handleManualRefresh()" title="Fetch latest real-time schedule from EduPage">
+          <span id="syncIcon" class="sync-icon">🔄</span>
+          <span id="syncText">Sync Now</span>
+        </button>
+
+        <!-- Mode Switch: Teacher vs Class -->
+        <div class="mode-toggle">
+          <button id="btnModeTeacher" class="toggle-btn active" onclick="switchMode('teacher')">
+            👨‍🏫 Teachers (<span id="teacherCountBadge">273</span>)
+          </button>
+          <button id="btnModeClass" class="toggle-btn" onclick="switchMode('class')">
+            🎓 Classes (<span id="classCountBadge">113</span>)
+          </button>
+        </div>
+
+        <!-- Free Teacher Finder Button -->
+        <button id="btnOpenFreeModal" class="btn-action btn-secondary" onclick="openFreeModal()">
+          <span class="btn-icon">🕒</span> Who is Free Now?
+        </button>
+
+        <!-- Print Action -->
+        <button class="btn-action btn-primary" onclick="window.print()">
+          <span class="btn-icon">🖨️</span> Print / PDF
+        </button>
+
+        <!-- Direct EduPage External Link -->
+        <a id="btnEduPageLink" href="https://mru.edupage.org" target="_blank" class="btn-action btn-outline">
+          <span class="btn-icon">↗</span> EduPage Official
+        </a>
+      </div>
+    </div>
+
+    <!-- Search & Quick Selection Bar -->
+    <div class="selection-bar">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Search by teacher name, department, or code (e.g. Roshi, XEBIA, Dipali, SOE)..." 
+          autocomplete="off"
+          oninput="handleSearchInput(event)"
+        />
+        <div id="searchDropdown" class="search-dropdown hidden"></div>
+      </div>
+
+      <!-- Quick Alphabet Filter -->
+      <div class="alpha-filter" id="alphaFilterContainer">
+        <!-- Populated via JavaScript -->
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area: Official Institutional Timetable Format -->
+  <main class="timetable-wrapper">
+    <div id="timetableSheet" class="timetable-sheet">
+
+      <!-- Official Header Matching Institutional Timetable -->
+      <div class="sheet-header">
+        <div class="header-left">
+          <div class="institution-branding">
+            <div class="brand-logo-text">
+              <span class="univ-title">MANAV RACHNA UNIVERSITY</span>
+              <span class="univ-statutory">Declared as State Private University vide Haryana Act 26 of 2014</span>
+            </div>
+            <div class="gptw-badge">
+              <span class="badge-tag">Great Place To Work® Certified</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="header-center">
+          <h2 id="sheetMainTitle" class="sheet-title">Select a Teacher</h2>
+          <p class="sheet-subtitle">Manav Rachna University, Sector 43, Faridabad</p>
+          <div id="teacherMetaBadge" class="teacher-meta-badge"></div>
+        </div>
+
+        <div class="header-right no-print">
+          <div class="stats-card">
+            <span class="stats-label">Weekly Load</span>
+            <span id="weeklyLoadText" class="stats-val">0 hrs</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading Spinner -->
+      <div id="loadingIndicator" class="loading-state hidden">
+        <div class="spinner"></div>
+        <p>Loading verified schedule from EduPage...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="empty-state">
+        <div class="empty-icon">📅</div>
+        <h3>No Faculty Member Selected</h3>
+        <p>Use the search bar above or click any letter below to view their weekly timetable.</p>
+        <div class="popular-suggestions" id="popularSuggestions"></div>
+      </div>
+
+      <!-- Official Grid Table -->
+      <div id="gridContainer" class="grid-container hidden">
+        <table class="asc-timetable" id="ascTimetable">
+          <thead>
+            <tr id="periodsHeaderRow">
+              <th class="day-col-header">Day</th>
+              <!-- Period columns populated dynamically -->
+            </tr>
+          </thead>
+          <tbody id="timetableBody">
+            <!-- Day rows (Mo, Tu, We, Th, Fr) populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Official Sheet Footer -->
+      <div class="sheet-footer">
+        <div class="footer-left">
+          <span>Validity: <strong id="validityText">3/8/2026-31/12/2026</strong></span>
+        </div>
+        <div class="footer-right">
+          <span>aSc Timetables Online • MRU EduPage Sync</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal: Who Is Free Right Now? -->
+  <div id="freeModal" class="modal-overlay hidden" onclick="closeFreeModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">
+          <h3>🕒 Live Faculty Availability Finder</h3>
+          <p>Find available teachers for project guidance, lab sign-offs, or doubt clearing.</p>
+        </div>
+        <button class="modal-close-btn" onclick="closeFreeModal()">&times;</button>
+      </div>
+
+      <div class="modal-filters">
+        <div class="filter-group">
+          <label for="freeDaySelect">Day:</label>
+          <select id="freeDaySelect" onchange="fetchFreeTeachers()">
+            <option value="0">Monday</option>
+            <option value="1">Tuesday</option>
+            <option value="2">Wednesday</option>
+            <option value="3">Thursday</option>
+            <option value="4">Friday</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="freePeriodSelect">Period / Time:</label>
+          <select id="freePeriodSelect" onchange="fetchFreeTeachers()">
+            <option value="1">Period 1 (08:10 - 09:00)</option>
+            <option value="2">Period 2 (09:00 - 09:50)</option>
+            <option value="3">Period 3 (09:50 - 10:40)</option>
+            <option value="4">Period 4 (10:40 - 11:30)</option>
+            <option value="6">Period 6 (12:20 - 13:10)</option>
+            <option value="7">Period 7 (13:10 - 14:00)</option>
+            <option value="8">Period 8 (14:00 - 14:50)</option>
+            <option value="9">Period 9 (14:50 - 15:40)</option>
+            <option value="10">Period 10 (15:40 - 16:30)</option>
+          </select>
+        </div>
+
+        <button class="btn-action btn-secondary" onclick="setLiveCurrentTime()">
+          ⚡ Right Now
+        </button>
+      </div>
+
+      <div class="modal-results">
+        <div class="results-summary">
+          <strong id="freeCountText">0</strong> Teachers are Free / In Cabin
+        </div>
+        <div class="free-teachers-grid" id="freeTeachersGrid">
+          <!-- Populated via JavaScript -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Toast Notification -->
+  <div id="toastNotification" class="toast-popup hidden">
+    <span id="toastIcon">✅</span>
+    <span id="toastMsg">Synced with EduPage!</span>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
