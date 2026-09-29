@@ -1,0 +1,885 @@
+/* ==========================================================
+   MRU Teacher Timetable & Availability Tracker Stylesheet
+   Matches official aSc Timetables institutional print layout
+   ========================================================== */
+
+:root {
+  --primary-navy: #0F1C3F;
+  --primary-accent: #2563EB;
+  --bg-color: #F8FAFC;
+  --card-bg: #FFFFFF;
+  --border-color: #CBD5E1;
+  --table-border: #1E293B;
+  --text-main: #0F172A;
+  --text-muted: #64748B;
+  --lunch-bg: #F1F5F9;
+  --free-bg: #FFFFFF;
+  --lab-badge: #E0E7FF;
+  --lecture-badge: #FEF3C7;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ================= Screen Navigation & Header ================= */
+.app-header {
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.header-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-mark {
+  background: var(--primary-navy);
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 18px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  letter-spacing: 1px;
+}
+
+.brand-text h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary-navy);
+}
+
+.brand-text .sub-text {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mode-toggle {
+  display: flex;
+  background: #EEF2F6;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: none;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn.active {
+  background: #FFFFFF;
+  color: var(--primary-navy);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: var(--primary-navy);
+  color: #FFFFFF;
+}
+
+.btn-primary:hover {
+  background: #1e293b;
+}
+
+.btn-secondary {
+  background: #0D9488;
+  color: #FFFFFF;
+}
+
+.btn-secondary:hover {
+  background: #0f766e;
+}
+
+.btn-sync {
+  background: #F1F5F9;
+  color: var(--primary-navy);
+  border: 1px solid var(--border-color);
+  font-weight: 600;
+}
+
+.btn-sync:hover {
+  background: #E2E8F0;
+  border-color: #94A3B8;
+}
+
+.btn-sync:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.sync-icon {
+  display: inline-block;
+  font-size: 14px;
+  transition: transform 0.3s;
+}
+
+.sync-icon.spinning {
+  animation: spin 0.8s linear infinite;
+}
+
+/* Live Sync Status Pill */
+.sync-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #22C55E;
+  border-radius: 50%;
+  box-shadow: 0 0 0 rgba(34, 197, 94, 0.4);
+  animation: pulse-dot 1.8s infinite;
+}
+
+@keyframes pulse-dot {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(34, 197, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+.sync-label {
+  font-weight: 600;
+  color: #166534;
+}
+
+.sync-time {
+  font-weight: 500;
+  color: #15803D;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 11.5px;
+}
+
+/* Floating Toast Notification */
+.toast-popup {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0F172A;
+  color: #FFFFFF;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  z-index: 1000;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid #334155;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--primary-navy);
+  border: 1px solid var(--border-color);
+}
+
+.btn-outline:hover {
+  background: #F1F5F9;
+}
+
+/* ================= Selection & Autocomplete Bar ================= */
+.selection-bar {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 10px 24px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.search-wrapper input {
+  width: 100%;
+  padding: 12px 16px 12px 42px;
+  font-size: 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  outline: none;
+  background: #F8FAFC;
+  transition: border-color 0.2s;
+}
+
+.search-wrapper input:focus {
+  border-color: var(--primary-accent);
+  background: #FFFFFF;
+}
+
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 380px;
+  overflow-y: auto;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+  z-index: 200;
+}
+
+.search-dropdown.hidden {
+  display: none;
+}
+
+.dropdown-item {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  border-bottom: 1px solid #F1F5F9;
+  transition: background 0.15s;
+}
+
+.dropdown-item:hover, .dropdown-item.selected {
+  background: #EFF6FF;
+}
+
+.item-main {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-main);
+}
+
+.item-badge {
+  font-size: 12px;
+  padding: 3px 8px;
+  background: #EEF2F6;
+  color: #334155;
+  border-radius: 4px;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.alpha-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.alpha-btn {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.alpha-btn:hover, .alpha-btn.active {
+  background: var(--primary-navy);
+  color: #FFFFFF;
+  border-color: var(--primary-navy);
+}
+
+/* ================= Timetable Sheet & Official View ================= */
+.timetable-wrapper {
+  max-width: 1400px;
+  margin: 20px auto 40px;
+  padding: 0 20px;
+}
+
+.timetable-sheet {
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  border-radius: 4px;
+  min-height: 600px;
+}
+
+/* Institutional Header matching official document */
+.sheet-header {
+  display: grid;
+  grid-template-columns: 280px 1fr 200px;
+  align-items: center;
+  border-bottom: 2px solid #000000;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+.brand-logo-text .univ-title {
+  display: block;
+  font-size: 17px;
+  font-weight: 800;
+  color: #0A3A60;
+  letter-spacing: 0.5px;
+}
+
+.brand-logo-text .univ-statutory {
+  display: block;
+  font-size: 8.5px;
+  color: #475569;
+  margin-top: 2px;
+}
+
+.gptw-badge {
+  margin-top: 6px;
+}
+
+.badge-tag {
+  display: inline-block;
+  background: #DC2626;
+  color: #FFFFFF;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+.header-center {
+  text-align: center;
+}
+
+.sheet-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #000000;
+  letter-spacing: -0.5px;
+  margin-bottom: 2px;
+}
+
+.sheet-subtitle {
+  font-size: 13px;
+  color: #334155;
+  font-weight: 500;
+}
+
+.teacher-meta-badge {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0F766E;
+}
+
+.header-right {
+  text-align: right;
+}
+
+.stats-card {
+  display: inline-block;
+  background: #F8FAFC;
+  border: 1px solid var(--border-color);
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.stats-label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.stats-val {
+  display: block;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--primary-navy);
+}
+
+/* ================= The Timetable Grid (Matching Screenshot) ================= */
+.grid-container {
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+.asc-timetable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  border: 2px solid #000000;
+  background: #FFFFFF;
+}
+
+.asc-timetable th, .asc-timetable td {
+  border: 1px solid #333333;
+  vertical-align: top;
+  padding: 0;
+}
+
+/* Table Header */
+.asc-timetable thead tr th {
+  background: #FFFFFF;
+  color: #000000;
+  text-align: center;
+  padding: 6px 2px;
+  border-bottom: 2px solid #000000;
+}
+
+.day-col-header {
+  width: 70px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.period-header-cell .period-num {
+  display: block;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.period-header-cell .period-time {
+  display: block;
+  font-size: 9.5px;
+  color: #334155;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.period-header-cell.lunch-col {
+  background: var(--lunch-bg);
+}
+
+/* Day Column (Mo, Tu, We, Th, Fr) */
+.day-cell {
+  text-align: center;
+  vertical-align: middle !important;
+  font-size: 30px;
+  font-weight: 700;
+  color: #000000;
+  background: #FFFFFF;
+  border-right: 2px solid #000000 !important;
+  width: 70px;
+}
+
+/* Slot Cell & Card Structure */
+.slot-cell {
+  height: 98px;
+  position: relative;
+  background: #FFFFFF;
+}
+
+.slot-cell.is-lunch {
+  background: #F8FAFC;
+  display: table-cell;
+}
+
+.slot-cell.is-free {
+  background: #FFFFFF;
+}
+
+.slot-content-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Single or Split Sessions inside a cell */
+.card-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 4px 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-item + .card-item {
+  border-top: 1px dashed #64748B;
+}
+
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 11px;
+}
+
+.card-room {
+  font-weight: 700;
+  color: #000000;
+  font-size: 12px;
+}
+
+.card-group {
+  font-size: 9px;
+  color: #475569;
+  font-weight: 600;
+  text-align: right;
+}
+
+.card-subject {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #000000;
+  text-align: center;
+  line-height: 1.2;
+  margin: 3px 0;
+  text-transform: uppercase;
+  word-break: break-word;
+}
+
+.card-bottom-row {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #000000;
+  text-align: left;
+}
+
+.card-bottom-row.teacher-name-label {
+  text-transform: uppercase;
+  color: #334155;
+  font-size: 10px;
+}
+
+/* Free Period Cell */
+.free-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #CBD5E1;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* Footer Section */
+.sheet-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid #000000;
+  font-size: 11px;
+  color: #333333;
+}
+
+/* ================= States (Loading & Empty) ================= */
+.loading-state, .empty-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #E2E8F0;
+  border-top-color: var(--primary-accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.empty-state h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary-navy);
+  margin-bottom: 6px;
+}
+
+.empty-state p {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.popular-suggestions {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.suggestion-chip {
+  background: #F1F5F9;
+  border: 1px solid var(--border-color);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.suggestion-chip:hover {
+  background: #E2E8F0;
+  border-color: #94A3B8;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ================= Modal: Free Teachers ================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  padding: 20px;
+}
+
+.modal-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-title h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--primary-navy);
+}
+
+.modal-title p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.modal-filters {
+  padding: 12px 20px;
+  background: #F8FAFC;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.filter-group select {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  font-size: 13px;
+  background: #FFFFFF;
+}
+
+.modal-results {
+  padding: 16px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.results-summary {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.free-teachers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.free-teacher-card {
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: #F8FAFC;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.free-teacher-card:hover {
+  background: #EFF6FF;
+  border-color: var(--primary-accent);
+}
+
+.free-teacher-name {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--text-main);
+}
+
+.free-teacher-code {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: 'Roboto Mono', monospace;
+}
+
+/* ================= PRINT STYLESHEET (Exact Landscape Matching) ================= */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 6mm;
+  }
+
+  body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    font-size: 10pt;
+  }
+
+  .no-print, .app-header, .modal-overlay {
+    display: none !important;
+  }
+
+  .timetable-wrapper {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .timetable-sheet {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    min-height: auto !important;
+  }
+
+  .sheet-header {
+    margin-bottom: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .asc-timetable {
+    width: 100% !important;
+    border: 1.5pt solid #000000 !important;
+  }
+
+  .asc-timetable th, .asc-timetable td {
+    border: 1pt solid #000000 !important;
+  }
+
+  .slot-cell {
+    height: 80px !important;
+  }
+
+  .free-indicator {
+    display: none !important;
+  }
+}

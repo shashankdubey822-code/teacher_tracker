@@ -139,13 +139,7 @@ FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
 
 if os.path.exists(FRONTEND_DIR):
     app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
-
-    @app.get("/")
-    def serve_frontend_index():
-        index_file = os.path.join(FRONTEND_DIR, "index.html")
-        if os.path.exists(index_file):
-            return FileResponse(index_file)
-        return {"message": "Teacher Tracker API is running. frontend/index.html not found."}
+    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend_root")
 
 
 if __name__ == "__main__":
