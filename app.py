@@ -1,10 +1,20 @@
 """
 MRU Teacher Timetable Tracker — Hugging Face Gradio Runner
-Runs on Gradio SDK with FastAPI routes and full-screen UI
+Runs on Gradio SDK with ZeroGPU support and FastAPI routes
 """
 
 import os
 import sys
+
+# ZeroGPU initialization requirement
+try:
+    import spaces
+    @spaces.GPU
+    def zero_gpu_init():
+        return "ready"
+except Exception:
+    pass
+
 import gradio as gr
 from fastapi.staticfiles import StaticFiles
 
@@ -15,7 +25,7 @@ sys.path.insert(0, BACKEND_DIR)
 
 from server import app as fastapi_app
 
-# Full-screen styling to remove Gradio margins & footer
+# Full-screen styling
 custom_css = """
 body, .gradio-container {
     padding: 0 !important;
