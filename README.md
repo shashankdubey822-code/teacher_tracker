@@ -1,3 +1,13 @@
+---
+title: Teacher Tracker
+emoji: 👨‍🏫
+colorFrom: blue
+colorTo: indigo
+sdk: gradio
+app_file: app.py
+pinned: false
+---
+
 # MRU Faculty Timetable & Availability Tracker
 
 A high-performance web tool built by reverse-engineering the **EduPage / aSc Timetables** portal of **Manav Rachna University** (`mru.edupage.org`).
